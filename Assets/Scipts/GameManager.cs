@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public List<GameObject> targets;
     public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI gameoverText;
+    public Button restartButton;
     private int score = 0;
+    public bool isGameRunning = true;
     // Start is called before the first frame update
     void Start()
     {
@@ -23,7 +28,7 @@ public class GameManager : MonoBehaviour
     
     IEnumerator TargetSpawner()
     {
-        while (true)
+        while (isGameRunning)
         {
             yield return new WaitForSeconds(0.5f);
             int targetIndex = Random.Range(0, targets.Count);
@@ -33,8 +38,23 @@ public class GameManager : MonoBehaviour
 
     public void UpdateScore(int delta)
     {
-        score += delta;
-        if (score < 0) score = 0;
+        if (isGameRunning)
+        {
+            score += delta;
+            if (score < 0) score = 0;
+        }
         scoreText.text = "Score: " + score;
+    }
+
+    public void GameOver()
+    {
+        gameoverText.gameObject.SetActive(true);
+        restartButton.gameObject.SetActive(true);
+        isGameRunning = false;
+    }
+
+    public void RestartGame()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }

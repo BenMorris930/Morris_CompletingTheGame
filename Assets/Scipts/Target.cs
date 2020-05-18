@@ -15,7 +15,7 @@ public class Target : MonoBehaviour
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
         eventManager = GameObject.Find("Event Manager").GetComponent<EventManager>();
         targetRB = GetComponent<Rigidbody>();
-        transform.position = new Vector3(Random.Range(-5, 6), -5);
+        transform.position = new Vector3(Random.Range(-5, 6), -1);
         targetRB.AddForce(Vector3.up * Random.Range(14, 19), ForceMode.Impulse);
         targetRB.AddTorque(Random.Range(-5, 6), Random.Range(-5, 6), Random.Range(-5, 6), ForceMode.Impulse);
 
@@ -24,28 +24,39 @@ public class Target : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (!gameManager.isGameRunning)
+        {
+            targetRB.useGravity = false;
+            targetRB.velocity = Vector3.zero;
+            targetRB.angularVelocity = Vector3.zero;
+
+        }
     }
 
     private void OnMouseDown()
     {
-        Destroy(gameObject);
-        
-        if (CompareTag("Bad"))
+        if (gameManager.isGameRunning)
         {
-            eventManager.targetDestroyed?.Invoke(-1);
-            Instantiate(expParticleBad, transform.position, expParticleBad.transform.rotation);
-        }
+            Destroy(gameObject);
 
-        if (CompareTag("Good"))
-        {
-            eventManager.targetDestroyed?.Invoke(1);
-            Instantiate(expParticleGood, transform.position, expParticleGood.transform.rotation);
+            if (CompareTag("Bad"))
+            {
+                eventManager.targetDestroyed?.Invoke(-1);
+                Instantiate(expParticleBad, transform.position, expParticleBad.transform.rotation);
+            }
+
+            if (CompareTag("Good"))
+            {
+                eventManager.targetDestroyed?.Invoke(1);
+                Instantiate(expParticleGood, transform.position, expParticleGood.transform.rotation);
+            }
         }
+        
     }
 
     private void OnTriggerEnter(Collider other)
     {
+        eventManager.gameOverEvent?.Invoke();
         Destroy(gameObject);
     }
 }
