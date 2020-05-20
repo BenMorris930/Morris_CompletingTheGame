@@ -56,7 +56,7 @@ public class Target : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        eventManager.gameOverEvent?.Invoke();
+        if (CompareTag("Good")) eventManager.gameOverEvent?.Invoke();
         Destroy(gameObject);
     }
 }
